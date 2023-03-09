@@ -1,27 +1,40 @@
-import React, { useState } from 'react';
-function Header({ title }) {
-	return <h1>{title ? title : 'Default title'}</h1>;
-}
+import { useEffect, useState } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import { SpotifyServices } from '../services/spotify/spotify.services';
 
-export default function HomePage() {
-	const names = ['Ada Lovelace', 'Grace Hopper', 'Margaret Hamilton'];
+export default function Component() {
+	const { data: session } = useSession();
+	const [userInfo, setUserInfo] = useState<any>({});
 
-	const [likes, setLikes] = useState(0);
+	const getUserInfo = async () => {
+		try {
+			const response = await SpotifyServices.getUserInfo();
+			if (response?.status === 200) {
+				console.log('Resp:', response.data);
+				setUserInfo(response.data);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-	function handleClick() {
-		setLikes(likes + 1);
+	useEffect(() => {
+		if (session) getUserInfo();
+	}, [session]);
+
+	if (session) {
+		return (
+			<>
+				{userInfo.email && <h1>Bienvenido {userInfo.display_name}</h1>}
+				Signed in as {session?.user?.email} <br />
+				<button onClick={() => signOut()}>Sign out</button>
+			</>
+		);
 	}
-
 	return (
-		<div>
-			<Header title="Develop. Preview. Ship. 🚀" />
-			<ul>
-				{names.map((name) => (
-					<li key={name}>{name}</li>
-				))}
-			</ul>
-
-			<button onClick={handleClick}>Like ({likes})</button>
-		</div>
+		<>
+			Not signed in <br />
+			<button onClick={() => signIn()}>Sign in</button>
+		</>
 	);
 }
