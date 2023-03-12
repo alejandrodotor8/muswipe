@@ -1,5 +1,5 @@
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { useSession, signIn, signOut } from '@/common/auth/client';
 import { SpotifyServices } from '../services/spotify/spotify.services';
 
 export default function Component() {
