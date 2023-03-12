@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn, signOut } from '@/common/auth/client';
 import { SpotifyServices } from '../services/spotify/spotify.services';
 
 export default function Component() {
@@ -10,7 +10,7 @@ export default function Component() {
 		try {
 			const response = await SpotifyServices.getUserInfo();
 			if (response?.status === 200) {
-				console.log('Resp:', response.data);
+				//console.log('Resp:', response.data);
 				setUserInfo(response.data);
 			}
 		} catch (error) {
@@ -22,11 +22,16 @@ export default function Component() {
 		if (session) getUserInfo();
 	}, [session]);
 
+	if (!session) {
+		return <h1>Cargando...</h1>;
+	}
+
 	if (session) {
 		return (
 			<>
-				{userInfo.email && <h1>Bienvenido {userInfo.display_name}</h1>}
-				Signed in as {session?.user?.email} <br />
+				{userInfo.email && <h1>Bienvenido {userInfo.display_name || ''}</h1>}
+				Signed in as {session?.user?.email}
+				<br />
 				<button onClick={() => signOut()}>Sign out</button>
 			</>
 		);

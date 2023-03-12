@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getSession } from 'next-auth/react';
+import { getSession } from '@/common/auth/client';
 
 const SpotifyApiClient = () => {
 	const defaultOptions = {

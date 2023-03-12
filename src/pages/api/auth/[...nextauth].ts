@@ -1,38 +1,13 @@
-import axios from 'axios';
-import NextAuth, { NextAuthOptions, TokenSet } from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
-import { TOKEN_ENDPOINT } from '@/constants/spotify-api-endpoints';
-
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const basic = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
-
-const getAccessToken = async (refresh_token: string) => {
-	try {
-		const response = await axios.post(
-			TOKEN_ENDPOINT,
-			{
-				grant_type: 'refresh_token',
-				refresh_token,
-			},
-			{
-				headers: {
-					Authorization: `Basic ${basic}`,
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
-			},
-		);
-		return response.data;
-	} catch (error) {
-		console.error(error);
-	}
-};
+import { NextAuth, NextAuthOptions, TokenSet } from '@/common/auth/client';
+import { getAccessToken } from '@/services/spotify/spotify.services';
 
 export const authOptions: NextAuthOptions = {
+	secret: process.env.NEXTAUTH_SECRET,
 	providers: [
 		SpotifyProvider({
-			clientId: client_id!,
-			clientSecret: client_secret!,
+			clientId: process.env.SPOTIFY_CLIENT_ID!,
+			clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
 		}),
 	],
 	callbacks: {
